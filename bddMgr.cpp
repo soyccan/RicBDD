@@ -59,9 +59,15 @@ BddMgr::init(size_t nin, size_t h, size_t c)
 
    // This must be called first
    BddNode::setBddMgr(this);
+#ifdef NO_COMP_EDGE
+   BddNodeInt::_terminal = uniquify(0, 0, 0);
+   BddNode::_one = BddNode(uniquify(1, 1, 0));
+   BddNode::_zero = BddNode(uniquify(0, 0, 0));
+#else
    BddNodeInt::_terminal = uniquify(0, 0, 0);
    BddNode::_one = BddNode(BddNodeInt::_terminal, BDD_POS_EDGE);
    BddNode::_zero = BddNode(BddNodeInt::_terminal, BDD_NEG_EDGE);
+#endif
 
    _supports.reserve(nin+1);
    _supports.push_back(BddNode::_one);

@@ -8,6 +8,8 @@
 
 #include <sstream>
 #include <fstream>
+#include <vector>
+#include <string>
 #include <cassert>
 #include <cstdlib>
 #include "bddNode.h"
@@ -148,6 +150,18 @@ BddNode::operator = (const BddNode& n)
    if (t)
       t->incRefCount();
    return (*this);
+}
+
+BddNode
+BddNode::operator ~ () const
+{
+#ifdef NO_COMP_EDGE
+   if (*this == BddNode::_zero) return BddNode::_one;
+   if (*this == BddNode::_one) return BddNode::_zero;
+   return BddNode((~getLeft())._node, (~getRight())._node, getLevel());
+#else
+   return (_node ^ BDD_NEG_EDGE);
+#endif
 }
 
 BddNode
@@ -428,7 +442,7 @@ BddNode::getAllCubes() const
 {
    vector<BddNode> allCubes;
    BddNode cube = BddNode::_one;
-   getAllCubesRecur(false, cube, allCubes);
+   getAllCubesRecur(true, cube, allCubes);
    return allCubes;
 }
 
@@ -594,3 +608,31 @@ BddNode::getLabel() const
    return str.str();
 }
 
+void
+BddNode::drawbddPNG(const string& label, const string& filename) const
+{
+   ofstream ofile(filename + ".dot");
+   drawBdd(label, ofile);
+   system(("dot -o " + filename + ".png -Tpng " + filename + ".dot").c_str());
+}
+
+vector<string>
+BddNode::toMinterms() const
+{
+   size_t nin = _BddMgr->getNumSupports() - 1;
+   string xx(nin, '0');
+   vector<string> onset;
+   for (int x = 0; x < 1 << nin; x++) {
+      for (int i = 0; i < nin; i++) {
+         xx[i] = '0' + ((x >> i) & 1);
+      }
+      if (_BddMgr->evalCube(*this, xx) == 1) {
+         onset.push_back(xx);
+      }
+   }
+   sort(onset.begin(), onset.end());
+   for (auto& x:onset) {
+      cout << "onset: "<<x<<endl;
+   }
+   return onset;
+}

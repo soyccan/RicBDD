@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -63,7 +64,7 @@ public:
 
    // Operators overloading
    size_t operator () () const { return _node; }
-   BddNode operator ~ () const { return (_node ^ BDD_NEG_EDGE); }
+   BddNode operator ~ () const;
    BddNode& operator = (const BddNode& n);
    BddNode operator & (const BddNode& n) const;
    BddNode& operator &= (const BddNode& n);
@@ -94,6 +95,14 @@ public:
 
    // Static functions
    static void setBddMgr(BddMgr* m) { _BddMgr = m; }
+
+   vector<string> toMinterms() const;
+   void drawbddPNG(const string& label, const string& filename) const;
+
+   // problem 7
+   inline bool isOne() const;
+   inline bool isZero() const;
+   BddNode restrict(const BddNode& c) const;
 
 private:
    size_t                  _node;

@@ -11,7 +11,6 @@
 #include <cassert>
 #include "bddNode.h"
 #include "bddMgr.h"
-#include "p7a.h"
 
 inline bool BddNode::isOne() const
 {
