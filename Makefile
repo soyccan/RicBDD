@@ -1,12 +1,12 @@
-EXEC      = testBdd p2 p5 p6a p6b p6c p7a
+EXEC      = testBdd p2 p5 p6a p6b p6c p7a final
 CSRCS     = $(filter-out $(addsuffix .cpp, $(EXEC)), $(wildcard *.cpp))
 CHDRS     = $(wildcard *.h)
 COBJS     = $(addsuffix .o, $(basename $(CSRCS)))
 
 CXX       = g++
 CFLAGS    = -g -Wall -O3 -std=c++17
-EXTINCDIR = 
-LIBDIR    = 
+EXTINCDIR =
+LIBDIR    =
 ECHO      = /bin/echo
 
 

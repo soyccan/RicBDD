@@ -47,7 +47,7 @@ public:
    BddNode(const BddNode& n);
    // n must have been uniquified...
    BddNode(BddNodeInt* n, BDD_EDGE_FLAG f = BDD_POS_EDGE);
-   // 
+   //
    BddNode(size_t v);
    // Destructor is the only place to decrease _refCount
    ~BddNode();
@@ -86,6 +86,7 @@ public:
    BddNode getCube(size_t ith=0) const;
    vector<BddNode> getAllCubes() const;
    string toString() const;
+   BddNode itp(const BddNode& g) const;
 
    friend ostream& operator << (ostream& os, const BddNode& n);
 

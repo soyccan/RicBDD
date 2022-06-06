@@ -373,20 +373,20 @@ BddNode::containNodeRecur(unsigned bLevel, unsigned eLevel) const
    if (getRight().containNodeRecur(bLevel, eLevel)) return true;
 
    return false;
-}     
-   
+}
+
 size_t
 BddNode::countCube() const
-{  
+{
    map<size_t, size_t> numCubeMap;
    return countCubeRecur(false, numCubeMap);
-}  
+}
 
 size_t
 BddNode::countCubeRecur(bool phase, map<size_t, size_t>& numCubeMap) const
 {
    if (isTerminal())
-      return ((phase ^ isNegEdge())? 0 : 1); 
+      return ((phase ^ isNegEdge())? 0 : 1);
 
    map<size_t, size_t>::iterator mi = numCubeMap.find(_node);
    if (mi != numCubeMap.end()) return (*mi).second;
@@ -403,14 +403,14 @@ BddNode::countCubeRecur(bool phase, map<size_t, size_t>& numCubeMap) const
 
 BddNode
 BddNode::getCube(size_t ith) const
-{  
+{
    ith %= countCube();
    BddNode res = BddNode::_one;
    size_t idx = 0;
    getCubeRecur(false, idx, ith, res);
    return res;
 }
-   
+
 // return true if the target-th cube is met
 bool
 BddNode::getCubeRecur
@@ -635,4 +635,28 @@ BddNode::toMinterms() const
       cout << "onset: "<<x<<endl;
    }
    return onset;
+}
+
+BddNode BddNode::itp(const BddNode& g) const {
+    assert((*this & g) == _zero);
+
+    int a_ = getLevel();
+    const BddNode& a = _BddMgr->getSupport(a_);
+
+    assert(*this == (a & getLeftCofactor(a_) | ~a & getRightCofactor(a_)));
+
+    if (g.getLeftCofactor(a_) == _zero)
+        return a | ~a & getRightCofactor(a_);
+
+    if (g.getRightCofactor(a_) == _zero)
+        return a & getLeftCofactor(a_) | ~a;
+
+    BddNode t = a & getLeftCofactor(a_).itp(g.getLeftCofactor(a_))
+                | ~a & getRightCofactor(a_);
+    if (t != _zero) return t;
+
+    t = a & getLeftCofactor(a_)
+        | ~a & getRightCofactor(a_).itp(g.getRightCofactor(a_));
+    assert(t != _zero);
+    return t;
 }
